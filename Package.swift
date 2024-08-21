@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "DRSKit",
+    products: [
+        .library(name: "DRSKit", targets: ["DRSKit"])
+    ],
     dependencies: [
         .package(url: "https://github.com/CoreOffice/XMLCoder", .upToNextMajor(from: "0.17.1")),
         .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.2.2")),
