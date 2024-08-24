@@ -5,30 +5,41 @@
 //  Created by Helloyunho on 2024/8/20.
 //
 
-public struct Seq {
+public struct Seq: Hashable {
     public let version = 9
     static public let defaultTick: Int32 = 480
 
-    public struct Info {
+    public struct Info: Hashable {
         public var timeUnit, endTick: Int32
 
-        public struct BPM {
+        public struct BPM: Hashable {
             public var tick, bpm: Int32
             
             public init(tick: Int32, bpm: Int32) {
                 self.tick = tick
                 self.bpm = bpm
             }
+            
+            public func hash(into hasher: inout Hasher) {
+                hasher.combine(tick)
+                hasher.combine(bpm)
+            }
         }
         public var bpm: [BPM]
 
-        public struct Measure {
+        public struct Measure: Hashable {
             public var tick, num, denominator: Int32
             
             public init(tick: Int32, num: Int32, denominator: Int32) {
                 self.tick = tick
                 self.num = num
                 self.denominator = denominator
+            }
+            
+            public func hash(into hasher: inout Hasher) {
+                hasher.combine(tick)
+                hasher.combine(num)
+                hasher.combine(denominator)
             }
         }
         public var measure: [Measure]
@@ -39,10 +50,17 @@ public struct Seq {
             self.bpm = bpm
             self.measure = measure
         }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(timeUnit)
+            hasher.combine(endTick)
+            hasher.combine(bpm)
+            hasher.combine(measure)
+        }
     }
     public var info: Info
 
-    public struct Extend {
+    public struct Extend: Hashable {
         public var tick: Int32
 
         public enum TypeEnum: String {
@@ -50,7 +68,7 @@ public struct Seq {
         }
         public var type: TypeEnum
 
-        public struct Param {
+        public struct Param: Hashable {
             public var layerName: String
             public var time, id, lane, speed: Int32
 
@@ -60,13 +78,19 @@ public struct Seq {
             }
             public var kind: Kind
 
-            public struct Color {
+            public struct Color: Hashable {
                 public var r, g, b: Int32
                 
                 public init(r: Int32, g: Int32, b: Int32) {
                     self.r = r
                     self.g = g
                     self.b = b
+                }
+                
+                public func hash(into hasher: inout Hasher) {
+                    hasher.combine(r)
+                    hasher.combine(g)
+                    hasher.combine(b)
                 }
             }
             public var color: Color?
@@ -80,6 +104,18 @@ public struct Seq {
                 self.kind = kind
                 self.color = color
             }
+            
+            public func hash(into hasher: inout Hasher) {
+                hasher.combine(layerName)
+                hasher.combine(time)
+                hasher.combine(id)
+                hasher.combine(lane)
+                hasher.combine(speed)
+                hasher.combine(kind)
+                if let color {
+                    hasher.combine(color)
+                }
+            }
         }
         public var param: Param
         
@@ -88,21 +124,32 @@ public struct Seq {
             self.type = type
             self.param = param
         }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(tick)
+            hasher.combine(type)
+            hasher.combine(param)
+        }
     }
     public var extends: [Extend]
 
-    public struct Rec {
-        public struct Clip {
+    public struct Rec: Hashable {
+        public struct Clip: Hashable {
             public var startTime, endTime: Int32
             
             public init(startTime: Int32, endTime: Int32) {
                 self.startTime = startTime
                 self.endTime = endTime
             }
+            
+            public func hash(into hasher: inout Hasher) {
+                hasher.combine(startTime)
+                hasher.combine(endTime)
+            }
         }
         public var clip: Clip
 
-        public struct Effect {
+        public struct Effect: Hashable {
             public var tick, time: Int32
 
             public enum Command: String {
@@ -130,6 +177,12 @@ public struct Seq {
                 self.time = time
                 self.command = command
             }
+            
+            public func hash(into hasher: inout Hasher) {
+                hasher.combine(tick)
+                hasher.combine(time)
+                hasher.combine(command)
+            }
         }
         public var effects: [Effect]
         
@@ -137,13 +190,18 @@ public struct Seq {
             self.clip = clip
             self.effects = effects
         }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(clip)
+            hasher.combine(effects)
+        }
     }
     public var rec: Rec
 
-    public struct Step {
+    public struct Step: Hashable {
         public var startTick, endTick, leftPos, rightPos: Int32
 
-        public struct LongPoint {
+        public struct LongPoint: Hashable {
             public var tick, leftPos, rightPos: Int32
             public var leftEndPos, rightEndPos: Int32?
             
@@ -153,6 +211,14 @@ public struct Seq {
                 self.rightPos = rightPos
                 self.leftEndPos = leftEndPos
                 self.rightEndPos = rightEndPos
+            }
+            
+            public func hash(into hasher: inout Hasher) {
+                hasher.combine(tick)
+                hasher.combine(leftPos)
+                hasher.combine(rightPos)
+                hasher.combine(leftEndPos)
+                hasher.combine(rightEndPos)
             }
         }
         public var longPoints: [LongPoint]
@@ -177,12 +243,29 @@ public struct Seq {
             self.kind = kind
             self.playerID = playerID
         }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(startTick)
+            hasher.combine(endTick)
+            hasher.combine(leftPos)
+            hasher.combine(rightPos)
+            hasher.combine(longPoints)
+            hasher.combine(kind)
+            hasher.combine(playerID)
+        }
     }
     public var steps: [Step]
 
     public static func timeToTick(_ time: Int32, tick: Int32) -> Int32 {
         let div = time / tick + 1
         return tick * div
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(info)
+        hasher.combine(extends)
+        hasher.combine(rec)
+        hasher.combine(steps)
     }
 
     public init(info: Info, extends: [Extend], rec: Rec, steps: [Step]) {

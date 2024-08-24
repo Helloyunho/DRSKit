@@ -5,6 +5,8 @@
 //  Created by Helloyunho on 2024/8/21.
 //
 
+import Foundation
+
 extension Seq {
     public static func parseFromSeq9(_ seq: Seq9) -> Seq {
         let seqData = seq.data
@@ -146,5 +148,69 @@ extension Seq {
             data: Seq9.SeqData(
                 info: info, sequenceData: seqData, extendData: extendData,
                 recData: recData))
+    }
+
+    public static func convert8To9(from: Seq8.SeqData) -> Seq9.SeqData {
+        func timeToTick(_ time: Int64, tick: Int32) -> Int32 {
+            let t = Int32(truncatingIfNeeded: time)
+            let div = t / tick + 1
+            return tick * div
+        }
+
+        return Seq9.SeqData(
+            info: Seq9.SeqData.Info(
+                timeUnit: from.info.tick,
+                endTick: from.gridData.grid.last!.etimeDt,
+                bpmInfo: Seq9.SeqData.Info.BPMInfo(
+                    bpm: from.info.bpmInfo.bpm.map({
+                        Seq9.SeqData.Info.BPMInfo.BPM(
+                            tick: $0.time,
+                            bpm: $0.bpm)
+                    })),
+                measureInfo: Seq9.SeqData.Info.MeasureInfo(
+                    measure: from.info.measureInfo.measure.map({
+                        Seq9.SeqData.Info.MeasureInfo.Measure(
+                            tick: $0.time,
+                            num: $0.num,
+                            denomi: $0.denomi)
+                    }))),
+            sequenceData: Seq9.SeqData.SequenceData(
+                step: from.sequenceData.step.map {
+                    old -> Seq9.SeqData.SequenceData.Step in
+                    .init(
+                        startTick: old.stimeDt, endTick: old.etimeDt,
+                        leftPos: old.posLeft, rightPos: old.posRight,
+                        kind: Seq9.SeqData.SequenceData.Step.Kind(
+                            rawValue: old.kind.rawValue)!,
+                        playerID: old.playerID,
+                        longPoint: old.longPoint != nil
+                            ? Seq9.SeqData.SequenceData.Step.LongPoint(
+                                point: old.longPoint!.point.map {
+                                    old
+                                        -> Seq9.SeqData.SequenceData.Step
+                                        .LongPoint.Point in
+                                    .init(
+                                        tick: timeToTick(
+                                            old.pointTime, tick: from.info.tick),
+                                        leftPos: old.posLeft,
+                                        rightPos: old.posRight,
+                                        leftEndPos: old.posLend,
+                                        rightEndPos: old.posRend)
+                                }) : nil)
+                }), extendData: Seq9.SeqData.ExtendData(extend: []),
+            recData: Seq9.SeqData.RecData(
+                clip: Seq9.SeqData.RecData.Clip(
+                    startTime: Int32(
+                        truncatingIfNeeded: from.recData.clip.last!.stimeMS),
+                    endTime: Int32(
+                        truncatingIfNeeded: from.recData.clip.last!.etimeMS)),
+                effect: from.recData.effect.map {
+                    old -> Seq9.SeqData.RecData.Effect in
+                    .init(
+                        tick: timeToTick(old.time, tick: from.info.tick),
+                        time: Int32(truncatingIfNeeded: old.time),
+                        command: Seq9.SeqData.RecData.Effect.Command(
+                            rawValue: old.command) ?? .ndwnc1)
+                }))
     }
 }

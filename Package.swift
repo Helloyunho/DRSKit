@@ -6,7 +6,8 @@ import PackageDescription
 let package = Package(
     name: "DRSKit",
     products: [
-        .library(name: "DRSKit", targets: ["DRSKit"])
+        .library(name: "DRSKit", targets: ["DRSKit"]),
+        .library(name: "DRSXMLImporter", targets: ["DRSXMLImporter"])
     ],
     dependencies: [
         .package(url: "https://github.com/CoreOffice/XMLCoder", .upToNextMajor(from: "0.17.1")),
@@ -18,6 +19,8 @@ let package = Package(
         .executableTarget(
             name: "read-drs-swift",
             dependencies: [.product(name: "XMLCoder", package: "XMLCoder"), .product(name: "ArgumentParser", package: "swift-argument-parser"), .target(name: "DRSKit")]),
-        .target(name: "DRSKit")
+        .target(name: "DRSKit"),
+        .target(name: "DRSXMLImporter",
+                dependencies: [.target(name: "DRSKit"), .product(name: "XMLCoder", package: "XMLCoder")])
     ]
 )
