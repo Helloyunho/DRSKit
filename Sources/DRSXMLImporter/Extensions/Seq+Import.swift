@@ -9,7 +9,6 @@ import DRSKit
 import XMLCoder
 
 public enum SeqImportError: Error {
-    case invalidXML
     case invalidVersion
     case notUTF8
 }
@@ -37,24 +36,20 @@ extension Seq {
     }
     
     public static func importXML(_ xmlData: Data) throws -> Seq {
-        if xmlData.starts(with: [0xEF, 0xBB, 0xBF, 0x3C, 0x3F]) {  // <?xml
-            var result: Seq9.SeqData!
-            let decoder = XMLDecoder()
-            let decoded = try decoder.decode(SeqOrig.SeqData.self, from: xmlData)
-            switch decoded.version {
-            case 8:
-                let allDecoded = try decoder.decode(
-                    Seq8.SeqData.self, from: xmlData)
-                result = convert8To9(from: allDecoded)
-            case 9:
-                result = try decoder.decode(Seq9.SeqData.self, from: xmlData)
-            default:
-                throw SeqImportError.invalidVersion
-            }
-            
-            return parseFromSeq9(Seq9(data: result))
-        } else {
-            throw SeqImportError.invalidXML
+        var result: Seq9.SeqData!
+        let decoder = XMLDecoder()
+        let decoded = try decoder.decode(SeqOrig.SeqData.self, from: xmlData)
+        switch decoded.version {
+        case 8:
+            let allDecoded = try decoder.decode(
+                Seq8.SeqData.self, from: xmlData)
+            result = convert8To9(from: allDecoded)
+        case 9:
+            result = try decoder.decode(Seq9.SeqData.self, from: xmlData)
+        default:
+            throw SeqImportError.invalidVersion
         }
+        
+        return parseFromSeq9(Seq9(data: result))
     }
 }

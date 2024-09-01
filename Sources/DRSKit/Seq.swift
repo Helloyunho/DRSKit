@@ -5,6 +5,8 @@
 //  Created by Helloyunho on 2024/8/20.
 //
 
+import Foundation
+
 public struct Seq: Hashable {
     public let version = 9
     static public let defaultTick: Int32 = 480
@@ -60,8 +62,9 @@ public struct Seq: Hashable {
     }
     public var info: Info
 
-    public struct Extend: Hashable {
+    public struct Extend: Hashable, Identifiable {
         public var tick: Int32
+        public let id = UUID()
 
         public enum TypeEnum: String {
             case Vfx
@@ -75,6 +78,7 @@ public struct Seq: Hashable {
             public enum Kind: String {
                 case Background
                 case OverEffect
+                case MiddleEffect
             }
             public var kind: Kind
 
@@ -149,8 +153,9 @@ public struct Seq: Hashable {
         }
         public var clip: Clip
 
-        public struct Effect: Hashable {
+        public struct Effect: Hashable, Identifiable {
             public var tick, time: Int32
+            public let id = UUID()
 
             public enum Command: String {
                 case Ndwnc1
@@ -198,12 +203,14 @@ public struct Seq: Hashable {
     }
     public var rec: Rec
 
-    public struct Step: Hashable {
+    public struct Step: Hashable, Identifiable {
         public var startTick, endTick, leftPos, rightPos: Int32
+        public let id = UUID()
 
-        public struct LongPoint: Hashable {
+        public struct LongPoint: Hashable, Identifiable {
             public var tick, leftPos, rightPos: Int32
             public var leftEndPos, rightEndPos: Int32?
+            public let id = UUID()
             
             public init(tick: Int32, leftPos: Int32, rightPos: Int32, leftEndPos: Int32? = nil, rightEndPos: Int32? = nil) {
                 self.tick = tick

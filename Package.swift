@@ -18,7 +18,7 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .executableTarget(
             name: "read-drs-swift",
-            dependencies: [.product(name: "XMLCoder", package: "XMLCoder"), .product(name: "ArgumentParser", package: "swift-argument-parser"), .target(name: "DRSKit")]),
+            dependencies: [.product(name: "XMLCoder", package: "XMLCoder"), .product(name: "ArgumentParser", package: "swift-argument-parser"), .target(name: "DRSKit"), .target(name: "DRSXMLImporter")]),
         .target(name: "DRSKit"),
         .target(name: "DRSXMLImporter",
                 dependencies: [.target(name: "DRSKit"), .product(name: "XMLCoder", package: "XMLCoder")])

@@ -1,5 +1,33 @@
 import Foundation
 
+public struct Int32WithType: Codable {
+    public let __type = "s32"
+    public let value: Int32
+    
+    public enum CodingKeys: String, CodingKey {
+        case __type
+        case value = ""
+    }
+    
+    init(_ value: Int32) {
+        self.value = value
+    }
+}
+
+public struct StringWithType: Codable {
+    public let __type = "str"
+    public let value: String
+    
+    public enum CodingKeys: String, CodingKey {
+        case __type
+        case value = ""
+    }
+    
+    init(_ value: String) {
+        self.value = value
+    }
+}
+
 // MARK: - Seq9
 
 public struct Seq9: Codable {
@@ -12,38 +40,29 @@ public struct Seq9: Codable {
             // MARK: - Extend
 
             public struct Extend: Codable {
-                public enum TypeEnum: String, Codable {
-                    case vfx = "Vfx"
-                }
-
-                public let type: TypeEnum
-                public let tick: Int32
+                public let type: StringWithType
+                public let tick: Int32WithType
                 public let param: Param
 
                 // MARK: - Param
 
                 public struct Param: Codable {
-                    public enum Kind: String, Codable {
-                        case background = "Background"
-                        case overEffect = "OverEffect"
-                    }
-
                     // MARK: - Color
 
                     public struct Color: Codable {
-                        public let red, green, blue: Int32
+                        public let red, green, blue: Int32WithType
 
                         public init(red: Int32, green: Int32, blue: Int32) {
-                            self.red = red
-                            self.green = green
-                            self.blue = blue
+                            self.red = Int32WithType(red)
+                            self.green = Int32WithType(green)
+                            self.blue = Int32WithType(blue)
                         }
                     }
 
-                    public let time: Int32
-                    public let kind: Kind
-                    public let layerName: String
-                    public let id, lane, speed: Int32
+                    public let time: Int32WithType
+                    public let kind: StringWithType
+                    public let layerName: StringWithType
+                    public let id, lane, speed: Int32WithType
                     public let color: Color?
 
                     public enum CodingKeys: String, CodingKey {
@@ -53,22 +72,22 @@ public struct Seq9: Codable {
                     }
 
                     public init(
-                        time: Int32, kind: Kind, layerName: String, id: Int32,
+                        time: Int32, kind: String, layerName: String, id: Int32,
                         lane: Int32, speed: Int32, color: Color?
                     ) {
-                        self.time = time
-                        self.kind = kind
-                        self.layerName = layerName
-                        self.id = id
-                        self.lane = lane
-                        self.speed = speed
+                        self.time = Int32WithType(time)
+                        self.kind = StringWithType(kind)
+                        self.layerName = StringWithType(layerName)
+                        self.id = Int32WithType(id)
+                        self.lane = Int32WithType(lane)
+                        self.speed = Int32WithType(speed)
                         self.color = color
                     }
                 }
 
-                public init(type: TypeEnum, tick: Int32, param: Param) {
-                    self.type = type
-                    self.tick = tick
+                public init(type: String, tick: Int32, param: Param) {
+                    self.type = StringWithType(type)
+                    self.tick = Int32WithType(tick)
                     self.param = param
                 }
             }
@@ -89,11 +108,11 @@ public struct Seq9: Codable {
                 // MARK: - BPM
 
                 public struct BPM: Codable {
-                    public let tick, bpm: Int32
+                    public let tick, bpm: Int32WithType
 
                     public init(tick: Int32, bpm: Int32) {
-                        self.tick = tick
-                        self.bpm = bpm
+                        self.tick = Int32WithType(tick)
+                        self.bpm = Int32WithType(bpm)
                     }
                 }
 
@@ -110,12 +129,12 @@ public struct Seq9: Codable {
                 // MARK: - Measure
 
                 public struct Measure: Codable {
-                    public let tick, num, denomi: Int32
+                    public let tick, num, denomi: Int32WithType
 
                     public init(tick: Int32, num: Int32, denomi: Int32) {
-                        self.tick = tick
-                        self.num = num
-                        self.denomi = denomi
+                        self.tick = Int32WithType(tick)
+                        self.num = Int32WithType(num)
+                        self.denomi = Int32WithType(denomi)
                     }
                 }
 
@@ -126,7 +145,7 @@ public struct Seq9: Codable {
                 }
             }
 
-            public let timeUnit, endTick: Int32
+            public let timeUnit, endTick: Int32WithType
             public let bpmInfo: BPMInfo
             public let measureInfo: MeasureInfo
 
@@ -141,8 +160,8 @@ public struct Seq9: Codable {
                 timeUnit: Int32, endTick: Int32, bpmInfo: BPMInfo,
                 measureInfo: MeasureInfo
             ) {
-                self.timeUnit = timeUnit
-                self.endTick = endTick
+                self.timeUnit = Int32WithType(timeUnit)
+                self.endTick = Int32WithType(endTick)
                 self.bpmInfo = bpmInfo
                 self.measureInfo = measureInfo
             }
@@ -154,7 +173,7 @@ public struct Seq9: Codable {
             // MARK: - Clip
 
             public struct Clip: Codable {
-                public let startTime, endTime: Int32
+                public let startTime, endTime: Int32WithType
 
                 public enum CodingKeys: String, CodingKey {
                     case startTime = "start_time"
@@ -162,40 +181,21 @@ public struct Seq9: Codable {
                 }
 
                 public init(startTime: Int32, endTime: Int32) {
-                    self.startTime = startTime
-                    self.endTime = endTime
+                    self.startTime = Int32WithType(startTime)
+                    self.endTime = Int32WithType(endTime)
                 }
             }
 
             // MARK: - Effect
 
             public struct Effect: Codable {
-                public enum Command: String, Codable {
-                    case ndwnc1 = "Ndwnc1"
-                    case njmpcs = "Njmpcs"
-                    case ntapcl = "Ntapcl"
-                    case ntapcs = "Ntapcs"
-                    case ntapll = "Ntapll"
-                    case ntapls = "Ntapls"
-                    case ntaprl = "Ntaprl"
-                    case ntaprs = "Ntaprs"
-                    case nsldlr1 = "Nsldlr1"
-                    case nsldrl1 = "Nsldrl1"
-                    case ndwnl1 = "Ndwnl1"
-                    case ndwnr1 = "Ndwnr1"
-                    case nsftl2 = "Nsftl2"
-                    case nsftr2 = "Nsftr2"
-                    case nsldcl1 = "Nsldcl1"
-                    case nsldcr1 = "Nsldcr1"
-                }
+                public let tick, time: Int32WithType
+                public let command: StringWithType
 
-                public let tick, time: Int32
-                public let command: Command
-
-                public init(tick: Int32, time: Int32, command: Command) {
-                    self.tick = tick
-                    self.time = time
-                    self.command = command
+                public init(tick: Int32, time: Int32, command: String) {
+                    self.tick = Int32WithType(tick)
+                    self.time = Int32WithType(time)
+                    self.command = StringWithType(command)
                 }
             }
 
@@ -220,8 +220,8 @@ public struct Seq9: Codable {
                     // MARK: - Point
 
                     public struct Point: Codable {
-                        public let tick, leftPos, rightPos: Int32
-                        public let leftEndPos, rightEndPos: Int32?
+                        public let tick, leftPos, rightPos: Int32WithType
+                        public let leftEndPos, rightEndPos: Int32WithType?
 
                         public enum CodingKeys: String, CodingKey {
                             case tick
@@ -235,11 +235,11 @@ public struct Seq9: Codable {
                             tick: Int32, leftPos: Int32, rightPos: Int32,
                             leftEndPos: Int32?, rightEndPos: Int32?
                         ) {
-                            self.tick = tick
-                            self.leftPos = leftPos
-                            self.rightPos = rightPos
-                            self.leftEndPos = leftEndPos
-                            self.rightEndPos = rightEndPos
+                            self.tick = Int32WithType(tick)
+                            self.leftPos = Int32WithType(leftPos)
+                            self.rightPos = Int32WithType(rightPos)
+                            self.leftEndPos = leftEndPos != nil ? Int32WithType(leftEndPos!) : nil
+                            self.rightEndPos = rightEndPos != nil ? Int32WithType(rightEndPos!) : nil
                         }
                     }
 
@@ -250,17 +250,8 @@ public struct Seq9: Codable {
                     }
                 }
 
-                public enum Kind: Int32, Codable {
-                    case left = 1
-                    case right = 2
-                    case down = 3
-                    case jump = 4
-                }
-
-                public let startTick, endTick, leftPos, rightPos: Int32
-                public let kind: Kind
-                public let playerID: Int32
-                public let longPoint: LongPoint?
+                public let startTick, endTick, leftPos, rightPos, kind, playerID: Int32WithType
+                public let longPoint: LongPoint
 
                 public enum CodingKeys: String, CodingKey {
                     case startTick = "start_tick"
@@ -274,15 +265,15 @@ public struct Seq9: Codable {
 
                 public init(
                     startTick: Int32, endTick: Int32, leftPos: Int32,
-                    rightPos: Int32, kind: Kind, playerID: Int32,
-                    longPoint: LongPoint?
+                    rightPos: Int32, kind: Int32, playerID: Int32,
+                    longPoint: LongPoint
                 ) {
-                    self.startTick = startTick
-                    self.endTick = endTick
-                    self.leftPos = leftPos
-                    self.rightPos = rightPos
-                    self.kind = kind
-                    self.playerID = playerID
+                    self.startTick = Int32WithType(startTick)
+                    self.endTick = Int32WithType(endTick)
+                    self.leftPos = Int32WithType(leftPos)
+                    self.rightPos = Int32WithType(rightPos)
+                    self.kind = Int32WithType(kind)
+                    self.playerID = Int32WithType(playerID)
                     self.longPoint = longPoint
                 }
             }
@@ -294,7 +285,7 @@ public struct Seq9: Codable {
             }
         }
 
-        public var seqVersion: Int32 = 9
+        public var seqVersion: Int32WithType = .init(9)
         public let info: Info
         public let sequenceData: SequenceData
         public let extendData: ExtendData

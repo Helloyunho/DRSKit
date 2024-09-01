@@ -280,7 +280,7 @@ public struct Seq8: Codable {
                 public let posLeft, posRight: Int32
                 public let kind: Kind
                 public let stepVar, playerID: Int32
-                public let longPoint: LongPoint?
+                public let longPoint: LongPoint
 
                 public enum CodingKeys: String, CodingKey {
                     case stimeMS = "stime_ms"
@@ -300,7 +300,7 @@ public struct Seq8: Codable {
                     stimeMS: Int64, etimeMS: Int64, stimeDt: Int32,
                     etimeDt: Int32, category: Category, posLeft: Int32,
                     posRight: Int32, kind: Kind, stepVar: Int32,
-                    playerID: Int32, longPoint: LongPoint?
+                    playerID: Int32, longPoint: LongPoint
                 ) {
                     self.stimeMS = stimeMS
                     self.etimeMS = etimeMS

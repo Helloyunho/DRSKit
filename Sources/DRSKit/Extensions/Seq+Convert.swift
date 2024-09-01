@@ -13,59 +13,59 @@ extension Seq {
 
         let infoOrig = seqData.info
         let info = Seq.Info(
-            timeUnit: infoOrig.timeUnit,
-            endTick: infoOrig.endTick,
+            timeUnit: infoOrig.timeUnit.value,
+            endTick: infoOrig.endTick.value,
             bpm: infoOrig.bpmInfo.bpm.map({
-                Info.BPM(tick: $0.tick, bpm: $0.bpm)
+                Info.BPM(tick: $0.tick.value, bpm: $0.bpm.value)
             }),
             measure: infoOrig.measureInfo.measure.map({
-                Info.Measure(tick: $0.tick, num: $0.num, denominator: $0.denomi)
+                Info.Measure(tick: $0.tick.value, num: $0.num.value, denominator: $0.denomi.value)
             })
         )
 
         let extendOrig = seqData.extendData.extend
         let extends = extendOrig.map({ ext in
             return Seq.Extend(
-                tick: ext.tick,
-                type: Extend.TypeEnum(rawValue: ext.type.rawValue)!,
+                tick: ext.tick.value,
+                type: Extend.TypeEnum(rawValue: ext.type.value)!,
                 param: Extend.Param(
-                    layerName: ext.param.layerName, time: ext.param.time,
-                    id: ext.param.id, lane: ext.param.lane,
-                    speed: ext.param.speed,
-                    kind: Extend.Param.Kind(rawValue: ext.param.kind.rawValue)!,
+                    layerName: ext.param.layerName.value, time: ext.param.time.value,
+                    id: ext.param.id.value, lane: ext.param.lane.value,
+                    speed: ext.param.speed.value,
+                    kind: Extend.Param.Kind(rawValue: ext.param.kind.value)!,
                     color: (ext.param.color != nil)
                         ? Extend.Param.Color(
-                            r: ext.param.color!.red, g: ext.param.color!.green,
-                            b: ext.param.color!.blue) : nil)
+                            r: ext.param.color!.red.value, g: ext.param.color!.green.value,
+                            b: ext.param.color!.blue.value) : nil)
             )
         })
 
         let recClipOrig = seqData.recData.clip
         let recClip = Rec.Clip(
-            startTime: recClipOrig.startTime, endTime: recClipOrig.endTime)
+            startTime: recClipOrig.startTime.value, endTime: recClipOrig.endTime.value)
         let recEffectsOrig = seqData.recData.effect
         let recEffects: [Rec.Effect] = recEffectsOrig.map({
             Rec.Effect(
-                tick: $0.tick, time: $0.time,
-                command: Rec.Effect.Command(rawValue: $0.command.rawValue)!)
+                tick: $0.tick.value, time: $0.time.value,
+                command: Rec.Effect.Command(rawValue: $0.command.value)!)
         })
         let rec = Rec(clip: recClip, effects: recEffects)
 
         let stepsOrig = seqData.sequenceData.step
         let steps: [Step] = stepsOrig.map({ step in
             return Step(
-                startTick: step.startTick,
-                endTick: step.endTick,
-                leftPos: step.leftPos,
-                rightPos: step.rightPos,
-                longPoints: step.longPoint?.point.map({
+                startTick: step.startTick.value,
+                endTick: step.endTick.value,
+                leftPos: step.leftPos.value,
+                rightPos: step.rightPos.value,
+                longPoints: step.longPoint.point.map({
                     Step.LongPoint(
-                        tick: $0.tick, leftPos: $0.leftPos,
-                        rightPos: $0.rightPos, leftEndPos: $0.leftEndPos,
-                        rightEndPos: $0.rightEndPos)
-                }) ?? [],
-                kind: Step.Kind(rawValue: step.kind.rawValue)!,
-                playerID: Step.PlayerID(rawValue: step.playerID)!
+                        tick: $0.tick.value, leftPos: $0.leftPos.value,
+                        rightPos: $0.rightPos.value, leftEndPos: $0.leftEndPos?.value,
+                        rightEndPos: $0.rightEndPos?.value)
+                }),
+                kind: Step.Kind(rawValue: step.kind.value)!,
+                playerID: Step.PlayerID(rawValue: step.playerID.value)!
             )
         })
 
@@ -90,12 +90,10 @@ extension Seq {
         let extendData = Seq9.SeqData.ExtendData(
             extend: extends.map({ ext in
                 return Seq9.SeqData.ExtendData.Extend(
-                    type: Seq9.SeqData.ExtendData.Extend.TypeEnum(
-                        rawValue: ext.type.rawValue)!, tick: ext.tick,
+                    type: ext.type.rawValue, tick: ext.tick,
                     param: Seq9.SeqData.ExtendData.Extend.Param(
                         time: ext.param.time,
-                        kind: Seq9.SeqData.ExtendData.Extend.Param.Kind(
-                            rawValue: ext.param.kind.rawValue)!,
+                        kind: ext.param.kind.rawValue,
                         layerName: ext.param.layerName,
                         id: ext.param.id, lane: ext.param.lane,
                         speed: ext.param.speed,
@@ -114,8 +112,7 @@ extension Seq {
             effect: rec.effects.map({
                 Seq9.SeqData.RecData.Effect(
                     tick: $0.tick, time: $0.time,
-                    command: Seq9.SeqData.RecData.Effect.Command(
-                        rawValue: $0.command.rawValue)!)
+                    command: $0.command.rawValue)
             })
         )
 
@@ -126,21 +123,18 @@ extension Seq {
                     endTick: step.endTick,
                     leftPos: step.leftPos,
                     rightPos: step.rightPos,
-                    kind: Seq9.SeqData.SequenceData.Step.Kind(
-                        rawValue: step.kind.rawValue)!,
+                    kind: step.kind.rawValue,
                     playerID: step.playerID.rawValue,
-                    longPoint: step.longPoints.isEmpty
-                        ? nil
-                        : Seq9.SeqData.SequenceData.Step.LongPoint(
-                            point: step.longPoints.map({ point in
-                                return Seq9.SeqData.SequenceData.Step.LongPoint
-                                    .Point(
-                                        tick: point.tick,
-                                        leftPos: point.leftPos,
-                                        rightPos: point.rightPos,
-                                        leftEndPos: point.leftEndPos,
-                                        rightEndPos: point.rightEndPos)
-                            }))
+                    longPoint: Seq9.SeqData.SequenceData.Step.LongPoint(
+                        point: step.longPoints.map({ point in
+                            return Seq9.SeqData.SequenceData.Step.LongPoint
+                                .Point(
+                                    tick: point.tick,
+                                    leftPos: point.leftPos,
+                                    rightPos: point.rightPos,
+                                    leftEndPos: point.leftEndPos,
+                                    rightEndPos: point.rightEndPos)
+                        }))
                 )
             }))
 
@@ -180,23 +174,21 @@ extension Seq {
                     .init(
                         startTick: old.stimeDt, endTick: old.etimeDt,
                         leftPos: old.posLeft, rightPos: old.posRight,
-                        kind: Seq9.SeqData.SequenceData.Step.Kind(
-                            rawValue: old.kind.rawValue)!,
+                        kind: old.kind.rawValue,
                         playerID: old.playerID,
-                        longPoint: old.longPoint != nil
-                            ? Seq9.SeqData.SequenceData.Step.LongPoint(
-                                point: old.longPoint!.point.map {
-                                    old
-                                        -> Seq9.SeqData.SequenceData.Step
-                                        .LongPoint.Point in
-                                    .init(
-                                        tick: timeToTick(
-                                            old.pointTime, tick: from.info.tick),
-                                        leftPos: old.posLeft,
-                                        rightPos: old.posRight,
-                                        leftEndPos: old.posLend,
-                                        rightEndPos: old.posRend)
-                                }) : nil)
+                        longPoint: Seq9.SeqData.SequenceData.Step.LongPoint(
+                            point: old.longPoint.point.map {
+                                old
+                                    -> Seq9.SeqData.SequenceData.Step
+                                    .LongPoint.Point in
+                                .init(
+                                    tick: timeToTick(
+                                        old.pointTime, tick: from.info.tick),
+                                    leftPos: old.posLeft,
+                                    rightPos: old.posRight,
+                                    leftEndPos: old.posLend,
+                                    rightEndPos: old.posRend)
+                            }))
                 }), extendData: Seq9.SeqData.ExtendData(extend: []),
             recData: Seq9.SeqData.RecData(
                 clip: Seq9.SeqData.RecData.Clip(
@@ -209,8 +201,7 @@ extension Seq {
                     .init(
                         tick: timeToTick(old.time, tick: from.info.tick),
                         time: Int32(truncatingIfNeeded: old.time),
-                        command: Seq9.SeqData.RecData.Effect.Command(
-                            rawValue: old.command) ?? .ndwnc1)
+                        command: old.command)
                 }))
     }
 }
